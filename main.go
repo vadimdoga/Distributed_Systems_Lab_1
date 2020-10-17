@@ -14,7 +14,7 @@ func main() {
 	var db *mongo.Database
 
 	// start the database
-	db = dtb.Config()
+	db = dtb.EstablishConnection()
 
 	// start models
 	dtb.ProductsCollection(db)
@@ -32,7 +32,7 @@ func handleRequests() {
 	storedProductsRouter.HandleFunc("/{id}", routes.GetStoredProducts).Methods("GET")
 	storedProductsRouter.HandleFunc("", routes.AddStoredProducts).Methods("POST")
 	storedProductsRouter.HandleFunc("/{id}", routes.UpdateStoredProducts).Methods("PUT")
-	storedProductsRouter.HandleFunc("/finalize/{id}", routes.FinalizeStoredProducts).Methods("GET")
+	storedProductsRouter.HandleFunc("/finalize/{id}", routes.FinalizeStoredProducts).Methods("PUT")
 
 	log.Println("Starting server on", addr)
 	log.Fatal(http.ListenAndServe(addr, router))
