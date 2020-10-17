@@ -2,6 +2,9 @@ package utils
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strconv"
 	"time"
 
 	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
@@ -41,4 +44,28 @@ func UpdateStatusDelivered(objID primitive.ObjectID) {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+// CountDocuments ...
+func CountDocuments() int64 {
+	response, err := dtb.ProductCollection.CountDocuments(dtb.Ctx, bson.M{"$or": []bson.M{{"status": "building"}, {"status": "delivering"}}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return response
+}
+
+// CheckPostLimit ...
+func CheckPostLimit() bool {
+	limitEnv := os.Getenv("LIMIT")
+
+	limit, _ := strconv.ParseInt(limitEnv, 10, 64)
+
+	countRes := CountDocuments()
+
+	if countRes < limit {
+		return true
+	}
+
+	return false
 }
