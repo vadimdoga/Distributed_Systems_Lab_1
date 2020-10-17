@@ -16,6 +16,9 @@ import (
 
 func main() {
 	var db *mongo.Database
+	ip := os.Getenv("IP")
+	port := os.Getenv("PORT")
+	serviceAddress := ip + ":" + port
 
 	// start the database
 	db = dtb.EstablishConnection()
@@ -23,17 +26,17 @@ func main() {
 	// start models
 	dtb.ProductsCollection(db)
 
-	// handle routes
-	handleRequests()
-
 	// connect to gateway
-	// gatewayConnection(serviceAddress)
+	resp := gatewayConnection(serviceAddress)
+	if len(resp) != 0 {
+		log.Println("Connected to gateway")
+	}
+
+	// handle routes
+	handleRequests(serviceAddress)
 }
 
-func handleRequests() string {
-	ip := os.Getenv("IP")
-	port := os.Getenv("PORT")
-	addr := ip + ":" + port
+func handleRequests(serviceAddress string) {
 	router := mux.NewRouter()
 
 	storedProductsRouter := router.PathPrefix("/products").Subrouter()
@@ -45,10 +48,9 @@ func handleRequests() string {
 
 	storedProductsRouter.HandleFunc("", routes.GetCountStatus).Methods("GET")
 
-	log.Println("Starting server on", addr)
-	log.Fatal(http.ListenAndServe(addr, router))
-
-	return addr
+	log.Println("Starting server on", serviceAddress)
+	log.Fatal(http.ListenAndServe(serviceAddress, router))
+	return
 }
 
 func gatewayConnection(serviceAddress string) string {
