@@ -7,7 +7,8 @@ RUN go get -d -v
 
 RUN go install -v
 
-ENV LIMIT=20
+ENV HIGH_LIMIT=5
+ENV LOW_LIMIT=20
 ENV TIMEOUT=1s
 ENV GATEWAY_ADDR=https://httpbin.org/post
 ENV IP=0.0.0.0
