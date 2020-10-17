@@ -16,7 +16,7 @@ var Ctx context.Context
 // EstablishConnection ...
 func EstablishConnection() *mongo.Database {
 	// Database Config
-	clientOptions := options.Client().ApplyURI("mongodb+srv://admin:admin@cluster0.cnciz.mongodb.net/storage_service?retryWrites=true&w=majority")
+	clientOptions := options.Client().ApplyURI("mongodb+srv://admin:admin@cluster0.cnciz.mongodb.net/products_service?retryWrites=true&w=majority")
 	client, err := mongo.NewClient(clientOptions)
 	//Set up a context required by mongo.Connect
 	Ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -32,7 +32,7 @@ func EstablishConnection() *mongo.Database {
 		log.Println("Connected!")
 	}
 	// Connect to the database
-	db := client.Database("storage_service")
+	db := client.Database("products_service")
 
 	return db
 }
