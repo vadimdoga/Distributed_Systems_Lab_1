@@ -15,4 +15,5 @@ type Products struct {
 	CreatedAt      time.Time          `json:"created_at" bson:"createdAt"`
 	UpdatedAt      time.Time          `json:"updated_at" bson:"updatedAt"`
 	Status         string             `json:"status" bson:"status"`
+	Priority       string             `json:"priority" bson:"priority"`
 }

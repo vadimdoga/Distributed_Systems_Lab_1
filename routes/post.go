@@ -14,11 +14,7 @@ import (
 // AddProducts ...
 func AddProducts(w http.ResponseWriter, r *http.Request) {
 
-	checkLimit := utils.CheckPostLimit()
-	if checkLimit == false {
-		utils.JSONError(w, "Service Unavailable. Limit can't be exceeded!", 503)
-		return
-	}
+	highCheckLimit, lowCheckLimit := utils.CheckPostLimit()
 
 	reqBody, _ := ioutil.ReadAll(r.Body)
 
@@ -27,9 +23,20 @@ func AddProducts(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(reqBody, &products)
 
-	prd := &products
-	prd.CreatedAt = timestamp
-	prd.Status = "building"
+	if products.Priority == "high" {
+		if highCheckLimit == false {
+			utils.JSONError(w, "Service Unavailable. High priority limit can't be exceeded!", 503)
+			return
+		}
+	} else if products.Priority == "low" {
+		if lowCheckLimit == false {
+			utils.JSONError(w, "Service Unavailable. Low priority limit can't be exceeded!", 503)
+			return
+		}
+	}
+
+	products.CreatedAt = timestamp
+	products.Status = "building"
 
 	res, err := dtb.ProductCollection.InsertOne(dtb.Ctx, products)
 	if err != nil {
@@ -38,6 +45,6 @@ func AddProducts(w http.ResponseWriter, r *http.Request) {
 	}
 	productID := res.InsertedID.(primitive.ObjectID).String()
 
-	utils.JSONResponse(w, "success", productID, prd.Status, 201)
+	utils.JSONResponse(w, "success", productID, products.Status, 201)
 	return
 }

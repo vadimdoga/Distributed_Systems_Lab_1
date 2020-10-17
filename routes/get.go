@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -40,7 +41,10 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 
 // GetCountStatus ...
 func GetCountStatus(w http.ResponseWriter, r *http.Request) {
-	response := utils.CountDocuments()
+	response, err := dtb.ProductCollection.CountDocuments(dtb.Ctx, bson.M{"$or": []bson.M{{"status": "building"}, {"status": "delivering"}}})
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	var count utils.CountResponse
 

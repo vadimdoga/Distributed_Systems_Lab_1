@@ -50,18 +50,27 @@ func TimeoutTasks() {
 }
 
 // CheckPostLimit ...
-func CheckPostLimit() bool {
-	limitEnv := os.Getenv("LIMIT")
+func CheckPostLimit() (bool, bool) {
+	var high bool = false
+	var low bool = false
 
-	limit, _ := strconv.ParseInt(limitEnv, 10, 64)
+	highLimitEnv := os.Getenv("HIGH_LIMIT")
+	lowLimitEnv := os.Getenv("LOW_LIMIT")
 
-	countRes := CountDocuments()
+	highLimit, _ := strconv.ParseInt(highLimitEnv, 10, 64)
+	lowLimit, _ := strconv.ParseInt(lowLimitEnv, 10, 64)
 
-	if countRes < limit {
-		return true
+	highCountedLimit, lowCountedLimit := PriorityCountDocuments()
+
+	if highCountedLimit < highLimit {
+		high = true
 	}
 
-	return false
+	if lowCountedLimit < lowLimit {
+		low = true
+	}
+
+	return high, low
 }
 
 // GatewayConnection ...

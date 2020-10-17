@@ -44,11 +44,31 @@ func UpdateStatusDelivered(objID primitive.ObjectID) {
 	}
 }
 
-// CountDocuments ...
-func CountDocuments() int64 {
-	response, err := dtb.ProductCollection.CountDocuments(dtb.Ctx, bson.M{"$or": []bson.M{{"status": "building"}, {"status": "delivering"}}})
-	if err != nil {
-		log.Fatal(err)
+// PriorityCountDocuments ...
+func PriorityCountDocuments() (int64, int64) {
+	highPriority, highErr := dtb.ProductCollection.CountDocuments(dtb.Ctx, bson.M{
+		"$and": []bson.M{
+			{"priority": "high"},
+		}, "$or": []bson.M{
+			{"status": "building"},
+			{"status": "delivering"},
+		},
+	})
+	if highErr != nil {
+		log.Fatal(highErr)
 	}
-	return response
+
+	lowPriority, lowErr := dtb.ProductCollection.CountDocuments(dtb.Ctx, bson.M{
+		"$and": []bson.M{
+			{"priority": "low"},
+		}, "$or": []bson.M{
+			{"status": "building"},
+			{"status": "delivering"},
+		},
+	})
+	if lowErr != nil {
+		log.Fatal(lowErr)
+	}
+
+	return highPriority, lowPriority
 }
