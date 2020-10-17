@@ -1,8 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gorilla/mux"
 	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
@@ -21,10 +25,13 @@ func main() {
 
 	// handle routes
 	handleRequests()
+
+	// connect to gateway
+	// gatewayConnection(serviceAddress)
 }
 
-func handleRequests() {
-	addr := ":5000"
+func handleRequests() string {
+	addr := "localhost:5000"
 	router := mux.NewRouter()
 
 	storedProductsRouter := router.PathPrefix("/products").Subrouter()
@@ -38,4 +45,32 @@ func handleRequests() {
 
 	log.Println("Starting server on", addr)
 	log.Fatal(http.ListenAndServe(addr, router))
+
+	return addr
+}
+
+func gatewayConnection(serviceAddress string) string {
+	gatewayAddress := os.Getenv("GATEWAY_ADDR")
+
+	requestBody, err := json.Marshal(map[string]string{
+		"address": serviceAddress,
+	})
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	resp, err := http.Post(gatewayAddress+"/", "application/json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return string(body)
 }
