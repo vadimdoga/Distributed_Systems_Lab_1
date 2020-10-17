@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// GetStoredProducts ...
+// GetProducts ...
 func GetProducts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	productID := vars["id"]
@@ -29,4 +30,21 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 	res, _ := json.Marshal(product)
 	w.Write(res)
+}
+
+// GetCountStatus ...
+func GetCountStatus(w http.ResponseWriter, r *http.Request) {
+	response, err := dtb.ProductCollection.CountDocuments(dtb.Ctx, bson.M{"$or": []bson.M{{"status": "building"}, {"status": "delivering"}}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	var count utils.CountResponse
+
+	count.Count = response
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	countResponse, _ := json.Marshal(count)
+	w.Write(countResponse)
+	return
 }

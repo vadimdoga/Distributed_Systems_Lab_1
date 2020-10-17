@@ -34,6 +34,8 @@ func handleRequests() {
 	storedProductsRouter.HandleFunc("/{id}", routes.UpdateProducts).Methods("PUT")
 	storedProductsRouter.HandleFunc("/deliver/{id}", routes.DeliverProducts).Methods("PUT")
 
+	storedProductsRouter.HandleFunc("", routes.GetCountStatus).Methods("GET")
+
 	log.Println("Starting server on", addr)
 	log.Fatal(http.ListenAndServe(addr, router))
 }
