@@ -13,7 +13,13 @@ import (
 
 // AddProducts ...
 func AddProducts(w http.ResponseWriter, r *http.Request) {
-	//*return id of the process
+
+	checkLimit := utils.CheckPostLimit()
+	if checkLimit == false {
+		utils.JSONError(w, "Service Unavailable. Limit can't be exceeded!", 503)
+		return
+	}
+
 	reqBody, _ := ioutil.ReadAll(r.Body)
 
 	var products dtb.Products
