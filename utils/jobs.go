@@ -16,10 +16,16 @@ import (
 
 // TimeoutTasks ...
 func TimeoutTasks() {
+	timeoutEnv := os.Getenv("TIMEOUT")
 	for {
 		var products []dtb.Products
 
-		time.Sleep(1 * time.Second)
+		timeout, err := time.ParseDuration(timeoutEnv)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		time.Sleep(timeout)
 
 		response, err := dtb.ProductCollection.Find(dtb.Ctx, bson.M{"status": "delivering"})
 		if err != nil {

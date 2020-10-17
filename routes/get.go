@@ -23,7 +23,14 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var product dtb.Products
-	dtb.ProductCollection.FindOne(dtb.Ctx, bson.M{"_id": objID}).Decode(&product)
+	checkRes := dtb.ProductCollection.FindOne(dtb.Ctx, bson.M{"_id": objID})
+
+	if checkRes.Err() != nil {
+		utils.JSONError(w, checkRes.Err().Error(), 404)
+		return
+	}
+
+	checkRes.Decode(&product)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
