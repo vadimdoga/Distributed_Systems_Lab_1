@@ -31,7 +31,9 @@ func main() {
 }
 
 func handleRequests() string {
-	addr := "localhost:5000"
+	ip := os.Getenv("IP")
+	port := os.Getenv("PORT")
+	addr := ip + ":" + port
 	router := mux.NewRouter()
 
 	storedProductsRouter := router.PathPrefix("/products").Subrouter()
