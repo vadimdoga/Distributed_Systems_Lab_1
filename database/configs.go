@@ -13,8 +13,8 @@ import (
 // Ctx ...
 var Ctx context.Context
 
-// Config ...
-func Config() *mongo.Database {
+// EstablishConnection ...
+func EstablishConnection() *mongo.Database {
 	// Database Config
 	clientOptions := options.Client().ApplyURI("mongodb+srv://admin:admin@cluster0.cnciz.mongodb.net/storage_service?retryWrites=true&w=majority")
 	client, err := mongo.NewClient(clientOptions)
