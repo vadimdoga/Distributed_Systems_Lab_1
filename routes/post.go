@@ -28,6 +28,7 @@ func AddStoredProducts(w http.ResponseWriter, r *http.Request) {
 	res, err := dtb.ProductCollection.InsertOne(dtb.Ctx, products)
 	if err != nil {
 		utils.JSONError(w, err, 500)
+		return
 	}
 	productID := res.InsertedID.(primitive.ObjectID).String()
 
