@@ -3,8 +3,6 @@ package utils
 import (
 	"fmt"
 	"log"
-	"os"
-	"strconv"
 	"time"
 
 	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
@@ -53,19 +51,4 @@ func CountDocuments() int64 {
 		log.Fatal(err)
 	}
 	return response
-}
-
-// CheckPostLimit ...
-func CheckPostLimit() bool {
-	limitEnv := os.Getenv("LIMIT")
-
-	limit, _ := strconv.ParseInt(limitEnv, 10, 64)
-
-	countRes := CountDocuments()
-
-	if countRes < limit {
-		return true
-	}
-
-	return false
 }
