@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// AddStoredProducts ...
+// AddProducts ...
 func AddProducts(w http.ResponseWriter, r *http.Request) {
 	//*return id of the process
 	reqBody, _ := ioutil.ReadAll(r.Body)

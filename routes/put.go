@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// UpdateStoredProducts ...
+// UpdateProducts ...
 func UpdateProducts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	productID := vars["id"]
@@ -63,7 +63,7 @@ func UpdateProducts(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-// FinalizeStoredProducts ...
+// DeliverProducts ...
 func DeliverProducts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	productID := vars["id"]
