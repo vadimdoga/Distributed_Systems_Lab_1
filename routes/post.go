@@ -12,7 +12,7 @@ import (
 )
 
 // AddStoredProducts ...
-func AddStoredProducts(w http.ResponseWriter, r *http.Request) {
+func AddProducts(w http.ResponseWriter, r *http.Request) {
 	//*return id of the process
 	reqBody, _ := ioutil.ReadAll(r.Body)
 

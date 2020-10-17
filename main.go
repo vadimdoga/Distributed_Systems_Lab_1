@@ -29,10 +29,10 @@ func handleRequests() {
 
 	storedProductsRouter := router.PathPrefix("/products").Subrouter()
 
-	storedProductsRouter.HandleFunc("/{id}", routes.GetStoredProducts).Methods("GET")
-	storedProductsRouter.HandleFunc("", routes.AddStoredProducts).Methods("POST")
-	storedProductsRouter.HandleFunc("/{id}", routes.UpdateStoredProducts).Methods("PUT")
-	storedProductsRouter.HandleFunc("/finalize/{id}", routes.FinalizeStoredProducts).Methods("PUT")
+	storedProductsRouter.HandleFunc("/{id}", routes.GetProducts).Methods("GET")
+	storedProductsRouter.HandleFunc("", routes.AddProducts).Methods("POST")
+	storedProductsRouter.HandleFunc("/{id}", routes.UpdateProducts).Methods("PUT")
+	storedProductsRouter.HandleFunc("/deliver/{id}", routes.DeliverProducts).Methods("PUT")
 
 	log.Println("Starting server on", addr)
 	log.Fatal(http.ListenAndServe(addr, router))

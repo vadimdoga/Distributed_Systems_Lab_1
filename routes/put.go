@@ -14,7 +14,7 @@ import (
 )
 
 // UpdateStoredProducts ...
-func UpdateStoredProducts(w http.ResponseWriter, r *http.Request) {
+func UpdateProducts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	productID := vars["id"]
 
@@ -64,7 +64,7 @@ func UpdateStoredProducts(w http.ResponseWriter, r *http.Request) {
 }
 
 // FinalizeStoredProducts ...
-func FinalizeStoredProducts(w http.ResponseWriter, r *http.Request) {
+func DeliverProducts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	productID := vars["id"]
 
@@ -84,7 +84,7 @@ func FinalizeStoredProducts(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{
 		"$set": bson.M{
-			"status": "processing",
+			"status": "delivering",
 		},
 	}
 
@@ -99,6 +99,8 @@ func FinalizeStoredProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.JSONResponse(w, "successfully finalized!", productID, "processing", 200)
+	go utils.UpdateStatusDelivered(objID)
+
+	utils.JSONResponse(w, "successfully finalized!", productID, "delivering", 200)
 	return
 }
