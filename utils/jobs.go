@@ -9,12 +9,38 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // TimeoutTasks ...
 func TimeoutTasks() {
-	time.Sleep(1 * time.Minute)
+	for {
+		var products []dtb.Products
 
+		time.Sleep(1 * time.Second)
+
+		response, err := dtb.ProductCollection.Find(dtb.Ctx, bson.M{"status": "delivering"})
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		response.All(dtb.Ctx, &products)
+
+		for _, pr := range products {
+			currentTime := time.Now()
+			diff := currentTime.Sub(pr.CreatedAt)
+			if diff.Seconds() >= 1 {
+				_, err := dtb.ProductCollection.DeleteOne(dtb.Ctx, bson.M{"_id": pr.ID})
+				if err != nil {
+					log.Fatal(err)
+				} else {
+					log.Printf("Task %s timeout reached!. Succesfull delete!", pr.ID.String())
+				}
+			}
+		}
+	}
 }
 
 // CheckPostLimit ...

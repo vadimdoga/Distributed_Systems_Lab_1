@@ -23,7 +23,7 @@ func CheckStatus(productID primitive.ObjectID, status string) bool {
 
 // UpdateStatusDelivered ...
 func UpdateStatusDelivered(objID primitive.ObjectID) {
-	time.Sleep(5 * time.Second)
+	time.Sleep(10 * time.Second)
 
 	filter := bson.M{"_id": bson.M{"$eq": objID}}
 

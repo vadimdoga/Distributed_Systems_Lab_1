@@ -30,6 +30,9 @@ func main() {
 		log.Println("Connected to gateway")
 	}
 
+	// start timeout check
+	go utils.TimeoutTasks()
+
 	// handle routes
 	handleRequests(serviceAddress)
 }

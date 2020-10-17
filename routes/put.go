@@ -43,8 +43,8 @@ func UpdateProducts(w http.ResponseWriter, r *http.Request) {
 
 	update := bson.M{
 		"$set": bson.M{
-			"updatedat":      timestamp,
-			"storageaddress": storageAddress,
+			"updatedAt":      timestamp,
+			"storageAddress": storageAddress,
 		},
 	}
 
