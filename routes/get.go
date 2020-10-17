@@ -12,7 +12,7 @@ import (
 )
 
 // GetStoredProducts ...
-func GetStoredProducts(w http.ResponseWriter, r *http.Request) {
+func GetProducts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	productID := vars["id"]
 

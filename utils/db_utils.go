@@ -1,6 +1,9 @@
 package utils
 
 import (
+	"fmt"
+	"time"
+
 	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -15,4 +18,27 @@ func CheckStatus(productID primitive.ObjectID, status string) bool {
 	}
 
 	return false
+}
+
+// UpdateStatusDelivered ...
+func UpdateStatusDelivered(objID primitive.ObjectID) {
+	time.Sleep(5 * time.Second)
+
+	filter := bson.M{"_id": bson.M{"$eq": objID}}
+
+	update := bson.M{
+		"$set": bson.M{
+			"status": "delivered",
+		},
+	}
+
+	_, err := dtb.ProductCollection.UpdateOne(
+		dtb.Ctx,
+		filter,
+		update,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+	}
 }
