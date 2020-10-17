@@ -15,11 +15,11 @@ func JSONError(w http.ResponseWriter, err interface{}, statusCode int) {
 }
 
 // JSONResponse ...
-func JSONResponse(w http.ResponseWriter, msg string, statusCode int) {
+func JSONResponse(w http.ResponseWriter, msg string, id string, status string, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
-	res := msgResponse{Message: msg}
+	res := msgResponse{Message: msg, ID: id, Status: status}
 	response, err := json.Marshal(res)
 	if err != nil {
 		fmt.Println(err)
