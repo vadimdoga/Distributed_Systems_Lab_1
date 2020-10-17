@@ -8,6 +8,7 @@ import (
 
 	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
 	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // AddStoredProducts ...
@@ -22,12 +23,14 @@ func AddStoredProducts(w http.ResponseWriter, r *http.Request) {
 
 	prd := &products
 	prd.CreatedAt = timestamp
+	prd.Status = "building"
 
-	_, err := dtb.ProductCollection.InsertOne(dtb.Ctx, products)
+	res, err := dtb.ProductCollection.InsertOne(dtb.Ctx, products)
 	if err != nil {
 		utils.JSONError(w, err, 500)
 	}
+	productID := res.InsertedID.(primitive.ObjectID).String()
 
-	utils.JSONResponse(w, "success", 201)
+	utils.JSONResponse(w, "success", productID, prd.Status, 201)
 	return
 }
