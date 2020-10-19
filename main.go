@@ -16,7 +16,8 @@ func main() {
 	var db *mongo.Database
 	ip := os.Getenv("IP")
 	port := os.Getenv("PORT")
-	serviceAddress := ip + ":" + port
+	basePath := os.Getenv("BASE_PATH")
+	serviceAddress := ip + ":" + port + basePath
 
 	// start the database
 	db = dtb.EstablishConnection()

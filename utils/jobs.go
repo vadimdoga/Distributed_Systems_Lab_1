@@ -79,7 +79,7 @@ func GatewayConnection(serviceAddress string) string {
 
 	requestBody, err := json.Marshal(map[string]string{
 		"address": serviceAddress,
-		"serviceType": "products"
+		"serviceType": "products",
 	})
 
 	if err != nil {

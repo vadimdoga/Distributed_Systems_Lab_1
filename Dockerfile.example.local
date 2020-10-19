@@ -14,6 +14,7 @@ ENV GATEWAY_ADDR=https://httpbin.org/post
 ENV IP=0.0.0.0
 ENV PORT=5000
 ENV MongoDbURI="<get URI>"
+ENV BASE_PATH="/products"
 
 EXPOSE 5000
 
