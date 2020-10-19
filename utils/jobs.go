@@ -79,13 +79,14 @@ func GatewayConnection(serviceAddress string) string {
 
 	requestBody, err := json.Marshal(map[string]string{
 		"address": serviceAddress,
+		"serviceType": "products"
 	})
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	resp, err := http.Post(gatewayAddress+"/", "application/json", bytes.NewBuffer(requestBody))
+	resp, err := http.Post(gatewayAddress+"/register", "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		log.Fatalln(err)
 	}
