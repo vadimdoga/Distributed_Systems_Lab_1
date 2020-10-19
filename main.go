@@ -25,9 +25,12 @@ func main() {
 	dtb.ProductsCollection(db)
 
 	// connect to gateway
-	resp := utils.GatewayConnection(serviceAddress)
-	if len(resp) != 0 {
-		log.Println("Connected to gateway")
+	for {
+		resp := utils.GatewayConnection(serviceAddress)
+		if len(resp) != 0 {
+			log.Println("Connected to gateway")
+			break
+		}
 	}
 
 	// start timeout check
@@ -40,7 +43,7 @@ func main() {
 func handleRequests(serviceAddress string) {
 	router := mux.NewRouter()
 
-	storedProductsRouter := router.PathPrefix("/products").Subrouter()
+	storedProductsRouter := router.PathPrefix("/api/products").Subrouter()
 
 	storedProductsRouter.HandleFunc("/{id}", routes.GetProducts).Methods("GET")
 	storedProductsRouter.HandleFunc("", routes.AddProducts).Methods("POST")
