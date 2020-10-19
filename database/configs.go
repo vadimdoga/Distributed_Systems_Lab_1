@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -15,8 +16,9 @@ var Ctx context.Context
 
 // EstablishConnection ...
 func EstablishConnection() *mongo.Database {
+	mongodbURI := os.Getenv("MongoDbURI")
 	// Database Config
-	clientOptions := options.Client().ApplyURI("mongodb+srv://admin:admin@cluster0.cnciz.mongodb.net/products_service?retryWrites=true&w=majority")
+	clientOptions := options.Client().ApplyURI(mongodbURI)
 	client, err := mongo.NewClient(clientOptions)
 	//Set up a context required by mongo.Connect
 	Ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
