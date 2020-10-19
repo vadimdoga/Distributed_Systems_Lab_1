@@ -27,7 +27,7 @@ func main() {
 	// connect to gateway
 	for {
 		resp := utils.GatewayConnection(serviceAddress)
-		if len(resp) != 0 {
+		if resp == 200 {
 			log.Println("Connected to gateway")
 			break
 		}

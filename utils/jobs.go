@@ -93,10 +93,5 @@ func GatewayConnection(serviceAddress string) string {
 
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	return string(body)
+	return resp.Status
 }
