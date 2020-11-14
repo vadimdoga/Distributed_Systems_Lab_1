@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/db"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/tools"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/tools/api"
 	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -20,7 +22,7 @@ func UpdateProducts(w http.ResponseWriter, r *http.Request) {
 
 	reqBody, _ := ioutil.ReadAll(r.Body)
 
-	var products dtb.Products
+	var products db.Products
 	timestamp := time.Now()
 
 	json.Unmarshal(reqBody, &products)
@@ -32,7 +34,7 @@ func UpdateProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkStatusField := utils.CheckStatus(objID, "building")
+	checkStatusField := api.CheckStatus(objID, "building")
 
 	if checkStatusField == false {
 		utils.JSONError(w, "This obj is not in building stage", 400)
@@ -48,8 +50,8 @@ func UpdateProducts(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	_, err := dtb.ProductCollection.UpdateOne(
-		dtb.Ctx,
+	_, err := db.ProductCollection.UpdateOne(
+		tools.Ctx,
 		filter,
 		update,
 	)
@@ -74,7 +76,7 @@ func DeliverProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	checkStatusField := utils.CheckStatus(objID, "building")
+	checkStatusField := api.CheckStatus(objID, "building")
 	if checkStatusField == false {
 		utils.JSONError(w, "This obj is not in building stage", 400)
 		return
@@ -88,8 +90,8 @@ func DeliverProducts(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	_, err := dtb.ProductCollection.UpdateOne(
-		dtb.Ctx,
+	_, err := db.ProductCollection.UpdateOne(
+		tools.Ctx,
 		filter,
 		update,
 	)
@@ -99,7 +101,7 @@ func DeliverProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go utils.UpdateStatusDelivered(objID)
+	go api.UpdateStatusDelivered(objID)
 
 	utils.JSONResponse(w, "successfully finalized!", productID, "delivering", 200)
 	return

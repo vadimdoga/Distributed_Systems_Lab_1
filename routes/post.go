@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/db"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/tools"
 	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -14,11 +15,11 @@ import (
 // AddProducts ...
 func AddProducts(w http.ResponseWriter, r *http.Request) {
 
-	highCheckLimit, lowCheckLimit := utils.CheckPostLimit()
+	highCheckLimit, lowCheckLimit := tools.CheckPostLimit()
 
 	reqBody, _ := ioutil.ReadAll(r.Body)
 
-	var products dtb.Products
+	var products db.Products
 	timestamp := time.Now()
 
 	json.Unmarshal(reqBody, &products)
@@ -38,7 +39,7 @@ func AddProducts(w http.ResponseWriter, r *http.Request) {
 	products.CreatedAt = timestamp
 	products.Status = "building"
 
-	res, err := dtb.ProductCollection.InsertOne(dtb.Ctx, products)
+	res, err := db.ProductCollection.InsertOne(tools.Ctx, products)
 	if err != nil {
 		utils.JSONError(w, err, 500)
 		return

@@ -1,0 +1,128 @@
+{
+	"info": {
+		"_postman_id": "8b57c605-3632-41c1-a197-521f29cbbd3b",
+		"name": "PAD_Services",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "localhost:5000/products",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Iphone 12, Blue, 128 GB\",\n    \"quantity\": 10,\n    \"priority\": \"low\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/products",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:5000/products/5f8ab16c9ddc5842684d57b6",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"storage_address\": \"Stefan Cel Mare 12/1\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/products/5faffaf43d93b36f86e90955",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products",
+						"5faffaf43d93b36f86e90955"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:5000/products/finalize/5f8ab16c9ddc5842684d57b6",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/products/deliver/5faffaf43d93b36f86e90955",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products",
+						"deliver",
+						"5faffaf43d93b36f86e90955"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:5000/products/5f8ac6765b9c03098e4c6336",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/products/5faffaf43d93b36f86e90955",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products",
+						"5faffaf43d93b36f86e90955"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:5000/products",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/products",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"products"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

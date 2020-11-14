@@ -6,7 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/db"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/tools"
 	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,8 +24,8 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var product dtb.Products
-	checkRes := dtb.ProductCollection.FindOne(dtb.Ctx, bson.M{"_id": objID})
+	var product db.Products
+	checkRes := db.ProductCollection.FindOne(tools.Ctx, bson.M{"_id": objID})
 
 	if checkRes.Err() != nil {
 		utils.JSONError(w, checkRes.Err().Error(), 404)
@@ -41,7 +42,7 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 
 // GetCountStatus ...
 func GetCountStatus(w http.ResponseWriter, r *http.Request) {
-	response, err := dtb.ProductCollection.CountDocuments(dtb.Ctx, bson.M{"$or": []bson.M{{"status": "building"}, {"status": "delivering"}}})
+	response, err := db.ProductCollection.CountDocuments(tools.Ctx, bson.M{"$or": []bson.M{{"status": "building"}, {"status": "delivering"}}})
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -6,45 +6,25 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	dtb "github.com/vadimdoga/Distributed_Systems_Lab_1/database"
 	"github.com/vadimdoga/Distributed_Systems_Lab_1/routes"
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
-	"go.mongodb.org/mongo-driver/mongo"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/tools"
 )
 
 func main() {
-	var db *mongo.Database
-	ip := os.Getenv("IP")
-	port := os.Getenv("PORT")
-	basePath := os.Getenv("BASE_PATH")
-	serviceAddress := ip + ":" + port + basePath
-
-	// start the database
-	db = dtb.EstablishConnection()
-
-	// start models
-	dtb.ProductsCollection(db)
-
-	// connect to gateway
-	for {
-		resp := utils.GatewayConnection(serviceAddress)
-		if resp == 200 {
-			log.Println("Connected to gateway")
-			break
-		}
-	}
+	// start config
+	tools.APIConfig()
 
 	// start timeout check
-	go utils.TimeoutTasks()
+	go tools.TimeoutTasks()
 
 	// handle routes
-	handleRequests(serviceAddress)
+	handleRequests(tools.SERVICE_ADDRESS)
 }
 
 func handleRequests(serviceAddress string) {
 	router := mux.NewRouter()
-
-	storedProductsRouter := router.PathPrefix("/api/products").Subrouter()
+	BASE_PATH := os.Getenv("BASE_PATH")
+	storedProductsRouter := router.PathPrefix(BASE_PATH).Subrouter()
 
 	storedProductsRouter.HandleFunc("/{id}", routes.GetProducts).Methods("GET")
 	storedProductsRouter.HandleFunc("", routes.AddProducts).Methods("POST")
