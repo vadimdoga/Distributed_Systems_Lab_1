@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 
@@ -34,4 +35,15 @@ func ReadConfigFile(filename string) {
 	os.Setenv("PORT", port.String())
 	os.Setenv("MongoDbURI", mongodbURI.String())
 	os.Setenv("BASE_PATH", basePath.String())
+}
+
+func DecodeJSON(body []byte) map[string]interface{} {
+	var decodedJSON map[string]interface{}
+
+	err := json.Unmarshal([]byte(body), &decodedJSON)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	return decodedJSON
 }

@@ -11,6 +11,19 @@ import (
 )
 
 func main() {
+	_, ch, q := tools.RabbitMQConnect()
+
+	recvChannel := make(chan []byte)
+
+	go tools.QueueReceive(ch, q, recvChannel)
+
+	tools.QueuePublish(ch, q, `{
+			"id" : 11,
+			"name" : "Irshad",
+			"department" : "IT",
+			"designation" : "Product Manager"
+	}`)
+
 	// start config
 	tools.APIConfig()
 
