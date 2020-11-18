@@ -1,9 +1,11 @@
 package tools
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/streadway/amqp"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
 )
 
 func failOnError(err error, msg string) {
@@ -12,33 +14,31 @@ func failOnError(err error, msg string) {
 	}
 }
 
-func RabbitMQConnect() (*amqp.Connection, *amqp.Channel, amqp.Queue) {
+func RabbitMQConnect() (*amqp.Connection, *amqp.Channel) {
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
 
-	q, err := declareQueue(ch)
-
-	return conn, ch, q
+	return conn, ch
 }
 
-func declareQueue(ch *amqp.Channel) (amqp.Queue, error) {
+func declareQueue(ch *amqp.Channel, eventName string) amqp.Queue {
 	q, err := ch.QueueDeclare(
-		"ORDER_CREATED", // name
-		true,            // durable
-		false,           // delete when unused
-		false,           // exclusive
-		false,           // no-wait
-		nil,             // arguments
+		eventName, // name
+		true,      // durable
+		false,     // delete when unused
+		false,     // exclusive
+		false,     // no-wait
+		nil,       // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 
-	return q, err
+	return q
 }
 
-func QueuePublish(ch *amqp.Channel, q amqp.Queue, jsonBody string) {
+func queuePublish(ch *amqp.Channel, q amqp.Queue, jsonBody string) {
 	body := []byte(jsonBody)
 	err := ch.Publish(
 		"",     // exchange
@@ -54,7 +54,7 @@ func QueuePublish(ch *amqp.Channel, q amqp.Queue, jsonBody string) {
 	}
 }
 
-func QueueReceive(ch *amqp.Channel, q amqp.Queue, recvChannel chan []byte) {
+func queueReceive(ch *amqp.Channel, q amqp.Queue, recvChannel chan []byte) {
 	for {
 		msgs, err := ch.Consume(
 			q.Name, // queue
@@ -70,4 +70,21 @@ func QueueReceive(ch *amqp.Channel, q amqp.Queue, recvChannel chan []byte) {
 			recvChannel <- d.Body
 		}
 	}
+}
+
+func WaitForMQ(ch *amqp.Channel) {
+	recvChannel := make(chan []byte)
+	orderCreatedQueue := declareQueue(ch, "ORDER_CREATED")
+	productsCheckingQueue := declareQueue(ch, "PRODUCTS_CHECKING")
+	go queueReceive(ch, orderCreatedQueue, recvChannel)
+
+	for {
+		bytesBody := <-recvChannel
+		jsonBody := utils.DecodeJSON(bytesBody)
+		fmt.Print(jsonBody["magic"])
+		//todo: use jsonBody to compute smth
+
+		queuePublish(ch, productsCheckingQueue, "I am from products service")
+	}
+
 }

@@ -11,19 +11,6 @@ import (
 )
 
 func main() {
-	_, ch, q := tools.RabbitMQConnect()
-
-	recvChannel := make(chan []byte)
-
-	go tools.QueueReceive(ch, q, recvChannel)
-
-	tools.QueuePublish(ch, q, `{
-			"id" : 11,
-			"name" : "Irshad",
-			"department" : "IT",
-			"designation" : "Product Manager"
-	}`)
-
 	// start config
 	tools.APIConfig()
 
@@ -31,7 +18,13 @@ func main() {
 	go tools.TimeoutTasks()
 
 	// handle routes
-	handleRequests(tools.SERVICE_ADDRESS)
+	go handleRequests(tools.SERVICE_ADDRESS)
+
+	// connect to rabbitmq
+	_, ch := tools.RabbitMQConnect()
+
+	//wait for data from queue
+	tools.WaitForMQ(ch)
 }
 
 func handleRequests(serviceAddress string) {
