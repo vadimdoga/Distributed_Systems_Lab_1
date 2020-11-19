@@ -12,7 +12,7 @@ type Products struct {
 	Title          string             `json:"title" bson:"title"`
 	StorageAddress string             `json:"storage_address" bson:"storageAddress"`
 	Quantity       int                `json:"quantity" bson:"quantity"`
-	Price          int                `json:"price" bson:"price"`
+	Price          float64            `json:"price" bson:"price"`
 	CreatedAt      time.Time          `json:"created_at" bson:"createdAt"`
 	UpdatedAt      time.Time          `json:"updated_at" bson:"updatedAt"`
 	Status         string             `json:"status" bson:"status"`

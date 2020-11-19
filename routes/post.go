@@ -44,8 +44,8 @@ func AddProducts(w http.ResponseWriter, r *http.Request) {
 		utils.JSONError(w, err, 500)
 		return
 	}
-	productID := res.InsertedID.(primitive.ObjectID).String()
+	productID := res.InsertedID.(primitive.ObjectID)
 
-	utils.JSONResponse(w, "success", productID, products.Status, 201)
+	utils.JSONResponse(w, "success", productID.Hex(), products.Status, 201)
 	return
 }

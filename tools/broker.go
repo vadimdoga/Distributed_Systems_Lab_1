@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"fmt"
+	"encoding/json"
 	"log"
 
 	"github.com/streadway/amqp"
@@ -38,9 +38,12 @@ func declareQueue(ch *amqp.Channel, eventName string) amqp.Queue {
 	return q
 }
 
-func queuePublish(ch *amqp.Channel, q amqp.Queue, jsonBody string) {
-	body := []byte(jsonBody)
-	err := ch.Publish(
+func queuePublish(ch *amqp.Channel, q amqp.Queue, jsonBody utils.EventPublish) {
+	body, err := json.Marshal(jsonBody)
+	if err != nil {
+		failOnError(err, "Failed to convert publish body")
+	}
+	err = ch.Publish(
 		"",     // exchange
 		q.Name, // routing key
 		false,  // mandatory
@@ -80,11 +83,19 @@ func WaitForMQ(ch *amqp.Channel) {
 
 	for {
 		bytesBody := <-recvChannel
-		jsonBody := utils.DecodeJSON(bytesBody)
-		fmt.Print(jsonBody["magic"])
-		//todo: use jsonBody to compute smth
+		jsonBody := utils.DecodeReceiver(bytesBody)
 
-		queuePublish(ch, productsCheckingQueue, "I am from products service")
+		totalPrice, newJsonProducts := ProcessOrderEvent(jsonBody)
+
+		var newJsonBody utils.EventPublish
+
+		newJsonBody.Products = newJsonProducts
+		newJsonBody.TotalPrice = totalPrice
+		newJsonBody.TransactionID = jsonBody.TransactionID
+		newJsonBody.UserID = jsonBody.UserID
+
+		// newJsonBody := utils.EncodePublisher()
+		queuePublish(ch, productsCheckingQueue, newJsonBody)
 	}
 
 }

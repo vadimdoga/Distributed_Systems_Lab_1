@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/vadimdoga/Distributed_Systems_Lab_1/db"
+	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -95,4 +96,28 @@ func CheckPostLimit() (bool, bool) {
 	}
 
 	return high, low
+}
+
+func ProcessOrderEvent(jsonBody utils.EventReceive) (float64, []utils.ProductsPublishList) {
+	var totalPrice float64 = 0
+	var newJsonProducts []utils.ProductsPublishList
+
+	for _, productJson := range jsonBody.Products {
+		var productDB db.Products
+		var newProductItem utils.ProductsPublishList
+
+		if err := db.ProductCollection.FindOne(Ctx, bson.M{"title": productJson.ProductTitle}).Decode(&productDB); err != nil {
+			log.Fatal(err)
+		}
+
+		newProductItem.Amount = productJson.Amount
+		newProductItem.ProductTitle = productJson.ProductTitle
+		newProductItem.ProductID = productDB.ID.Hex()
+
+		newJsonProducts = append(newJsonProducts, newProductItem)
+
+		totalPrice += productDB.Price
+	}
+
+	return totalPrice, newJsonProducts
 }

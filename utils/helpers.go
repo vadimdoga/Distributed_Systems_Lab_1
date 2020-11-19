@@ -37,8 +37,8 @@ func ReadConfigFile(filename string) {
 	os.Setenv("BASE_PATH", basePath.String())
 }
 
-func DecodeJSON(body []byte) map[string]interface{} {
-	var decodedJSON map[string]interface{}
+func DecodeReceiver(body []byte) EventReceive {
+	var decodedJSON EventReceive
 
 	err := json.Unmarshal([]byte(body), &decodedJSON)
 	if err != nil {
@@ -47,3 +47,14 @@ func DecodeJSON(body []byte) map[string]interface{} {
 
 	return decodedJSON
 }
+
+// func EncodePublisher(body ) EventPublish {
+// 	var encodedJSON EventReceive
+
+// 	err := json.Marshal(EventPublish)
+// 	if err != nil {
+// 		log.Fatal(err.Error())
+// 	}
+
+// 	return decodedJSON
+// }
