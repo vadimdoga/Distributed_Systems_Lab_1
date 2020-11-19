@@ -1,11 +1,11 @@
 FROM golang:1.15.3
 
-WORKDIR /products_microservice
+WORKDIR /products_service
+
+COPY . .
 
 RUN go get -d -v
 
 RUN go install -v
-
-COPY ./products_microservice .
 
 CMD go run .

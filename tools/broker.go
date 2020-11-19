@@ -3,6 +3,7 @@ package tools
 import (
 	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/streadway/amqp"
 	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
@@ -15,7 +16,9 @@ func failOnError(err error, msg string) {
 }
 
 func RabbitMQConnect() (*amqp.Connection, *amqp.Channel) {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	port := os.Getenv("MQ_PORT")
+	address := os.Getenv("MQ_ADDRESS")
+	conn, err := amqp.Dial("amqp://guest:guest@" + address + ":" + port)
 	failOnError(err, "Failed to connect to RabbitMQ")
 
 	ch, err := conn.Channel()
