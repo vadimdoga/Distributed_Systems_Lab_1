@@ -30,7 +30,7 @@ func RabbitMQConnect() (*amqp.Connection, *amqp.Channel) {
 func declareQueue(ch *amqp.Channel, eventName string) amqp.Queue {
 	q, err := ch.QueueDeclare(
 		eventName, // name
-		true,      // durable
+		false,     // durable
 		false,     // delete when unused
 		false,     // exclusive
 		false,     // no-wait

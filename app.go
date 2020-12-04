@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
 	"github.com/vadimdoga/Distributed_Systems_Lab_1/routes"
@@ -29,8 +28,7 @@ func main() {
 
 func handleRequests(serviceAddress string) {
 	router := mux.NewRouter()
-	BASE_PATH := os.Getenv("BASE_PATH")
-	storedProductsRouter := router.PathPrefix(BASE_PATH).Subrouter()
+	storedProductsRouter := router.PathPrefix("/api/products").Subrouter()
 
 	storedProductsRouter.HandleFunc("/{id}", routes.GetProducts).Methods("GET")
 	storedProductsRouter.HandleFunc("", routes.AddProducts).Methods("POST")

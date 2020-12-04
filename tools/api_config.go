@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"math"
 	"net/http"
@@ -62,10 +63,20 @@ func gatewayConnection(serviceAddress string) {
 }
 
 // EstablishConnection ...
-func establishConnection(mongodbURI string) *mongo.Database {
+func establishConnection() *mongo.Database {
+	mongodbHost := os.Getenv("MONGODB_HOST")
+	mongodbPort := os.Getenv("MONGODB_PORT")
+	mongodbDB := os.Getenv("MONGODB_DB")
+	// mongodbUsername := os.Getenv("MONGODB_USERNAME")
+	// mongodbPassword := os.Getenv("MONGODB_PASSWORD")
+
 	// Database Config
-	clientOptions := options.Client().ApplyURI(mongodbURI)
+	uri := fmt.Sprintf("mongodb://%s:%s", mongodbHost, mongodbPort)
+	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.NewClient(clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
 	//Set up a context required by mongo.Connect
 	Ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	err = client.Connect(Ctx)
@@ -80,7 +91,7 @@ func establishConnection(mongodbURI string) *mongo.Database {
 		log.Println("Connection to DB established!")
 	}
 	// Connect to the database
-	db := client.Database("products_service")
+	db := client.Database(mongodbDB)
 
 	return db
 }
@@ -93,12 +104,11 @@ func APIConfig() {
 	} else if appEnv == "production" {
 		production()
 	}
-	ip := os.Getenv("IP")
+	host := os.Getenv("HOST")
 	port := os.Getenv("PORT")
-	mongodbURI := os.Getenv("MongoDbURI")
-	SERVICE_ADDRESS = ip + ":" + port
+	SERVICE_ADDRESS = host + ":" + port
 	// start the database
-	ConnDB = establishConnection(mongodbURI)
+	ConnDB = establishConnection()
 
 	// start models
 	db.ProductsCollection(ConnDB)

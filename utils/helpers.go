@@ -13,28 +13,22 @@ func ReadConfigFile(filename string) {
 	if err != nil {
 		log.Fatalln("failed to load shared credentials file", err)
 	}
-	iniProfile, err := config.GetSection("ENVIRONMENT")
+	iniProfile, err := config.GetSection("DATABASE")
 	if err != nil {
-		log.Fatalln("failed to get profile ENVIRONMENT", err)
+		log.Fatalln("failed to get profile DATABASE", err)
 	}
 
-	highLimit, _ := iniProfile.GetKey("HIGH_LIMIT")
-	lowLimit, _ := iniProfile.GetKey("LOW_LIMIT")
-	timeout, _ := iniProfile.GetKey("TIMEOUT")
-	gatewayAddr, _ := iniProfile.GetKey("GATEWAY_ADDR")
-	ip, _ := iniProfile.GetKey("IP")
-	port, _ := iniProfile.GetKey("PORT")
-	mongodbURI, _ := iniProfile.GetKey("MongoDbURI")
-	basePath, _ := iniProfile.GetKey("BASE_PATH")
+	mongodbHost, _ := iniProfile.GetKey("MONGODB_HOST")
+	mongodbDB, _ := iniProfile.GetKey("MONGODB_DB")
+	mongodbPort, _ := iniProfile.GetKey("MONGODB_PORT")
+	mongodbUsername, _ := iniProfile.GetKey("MONGODB_USERNAME")
+	mongodbPassword, _ := iniProfile.GetKey("MONGODB_PASSWORD")
 
-	os.Setenv("HIGH_LIMIT", highLimit.String())
-	os.Setenv("LOW_LIMIT", lowLimit.String())
-	os.Setenv("TIMEOUT", timeout.String())
-	os.Setenv("GATEWAY_ADDR", gatewayAddr.String())
-	os.Setenv("IP", ip.String())
-	os.Setenv("PORT", port.String())
-	os.Setenv("MongoDbURI", mongodbURI.String())
-	os.Setenv("BASE_PATH", basePath.String())
+	os.Setenv("MONGODB_HOST", mongodbHost.String())
+	os.Setenv("MONGODB_DB", mongodbDB.String())
+	os.Setenv("MONGODB_PORT", mongodbPort.String())
+	os.Setenv("MONGODB_USERNAME", mongodbUsername.String())
+	os.Setenv("MONGODB_PASSWORD", mongodbPassword.String())
 }
 
 func DecodeReceiver(body []byte) EventReceive {

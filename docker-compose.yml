@@ -1,38 +1,50 @@
 version: "2.3"
 
 services:
-  products_service:
-    image: product_service
-    restart: always
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - "0.0.0.0:8080:8080"
-    volumes:
-      - ".:/product_service"
-    environment:
-      APP_ENVIRONMENT: production
-      HIGH_LIMIT: 5
-      LOW_LIMIT: 20
-      TIMEOUT: 120
-      GATEWAY_ADDR: https://httpbin.org/post
-      IP: 0.0.0.0
-      PORT: 8080
-      BASE_PATH: "/api/products"
-      MongoDbURI: <add your url>
-      MQ_PORT: 5672
-      MQ_ADDRESS: rabbitmq
-    depends_on:
-      - rabbitmq
+    rabbitMQ:
+        image: rabbitmq:3-management
+        ports:
+            - "15672:15672"
+            - "5672:5672"
+        volumes:
+            - rabbitMQ_volume:/var/lib/rabbitmq
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    volumes:
-      - /var/lib/rabbitmq
-    ports:
-      - 15672:15672
-      - 5672:5672
+    products_mongo_db:
+        image: mongo
+        environment:
+            - MONGO_INITDB_DATABASE=orders_service
+        volumes:
+            - products_mongo_db_v:/data/db
+        ports:
+            - "27017:27017"
+
+    products_service:
+        image: product_service
+        build:
+            context: .
+            dockerfile: Dockerfile
+        restart: always
+        links:
+            - products_mongo_db
+        ports:
+            - "0.0.0.0:8080:8080"
+        environment:
+            APP_ENVIRONMENT: production
+            HIGH_LIMIT: 5
+            LOW_LIMIT: 20
+            TIMEOUT: 1200
+            GATEWAY_ADDR: https://httpbin.org/post
+            HOST: 0.0.0.0
+            PORT: 8080
+            MQ_PORT: 5672
+            MQ_ADDRESS: rabbitMQ
+            MONGODB_HOST: products_mongo_db
+            MONGODB_PORT: 27017
+            MONGODB_DB: products_service
+        depends_on:
+            - rabbitMQ
+            - products_mongo_db
 
 volumes:
-  rabbitmq:
+    products_mongo_db_v:
+    rabbitMQ_volume:
