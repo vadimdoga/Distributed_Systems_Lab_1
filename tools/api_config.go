@@ -114,5 +114,5 @@ func APIConfig() {
 	db.ProductsCollection(ConnDB)
 
 	// connect to gateway
-	// gatewayConnection(SERVICE_ADDRESS)
+	gatewayConnection(SERVICE_ADDRESS)
 }
