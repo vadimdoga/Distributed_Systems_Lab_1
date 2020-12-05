@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
+	"github.com/vadimdoga/PAD_Products_Service/utils"
 )
 
 func ReceiveOrder() {
@@ -15,7 +15,10 @@ func ReceiveOrder() {
 
 	for {
 		bytesBody := <-orderRecvChannel
-		jsonBody := utils.DecodeReceiver(bytesBody)
+		var jsonBody utils.EventReceive
+		err := json.Unmarshal([]byte(bytesBody), &jsonBody)
+		FailOnJsonError(err, "Casting error", bytesBody)
+
 		receiveMsg := fmt.Sprintf("Received transaction: %s", jsonBody.TransactionID)
 		fmt.Println(receiveMsg)
 
@@ -29,17 +32,20 @@ func ReceiveOrder() {
 		newJsonBody.UserID = jsonBody.UserID
 
 		body, err := json.Marshal(newJsonBody)
-		utils.FailOnError(err, "Value Error", body)
+		utils.FailOnError(err, "Value Error")
 
 		QueuePublish("PRODUCTS_CHECKING", body)
 	}
 }
 
-func PublishCompensateOrder(jsonBody utils.EventCompensate) {
-	body, err := json.Marshal(jsonBody)
-	if err != nil {
-		log.Fatalf("%s", err)
+func PublishCompensateOrder(oldJson []byte, error_msg string) {
+	newJsonBody := utils.EventCompensate{
+		ErrorMsg:       error_msg,
+		ProductDetails: string(oldJson),
 	}
+
+	body, err := json.Marshal(newJsonBody)
+	utils.FailOnError(err, "Cast error")
 
 	QueuePublish("COMPENSATION_ORDER_CREATED", body)
 }
@@ -50,10 +56,9 @@ func ReceiveCompensateProducts() {
 	go QueueReceive("COMPENSATION_PRODUCTS_CHECKING", cmpProductsRecvChannel)
 }
 
-func FailOnJsonError(err error, msg string, body []byte) {
+func FailOnJsonError(err error, msg string, recvBody []byte) {
 	if err != nil {
+		PublishCompensateOrder(recvBody, msg)
 		log.Fatalf("%s: %s", msg, err)
-
-		PublishCompensateOrder(body)
 	}
 }

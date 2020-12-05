@@ -1,15 +1,16 @@
-import pika, sys, os
+import pika, sys, os, json
 
 def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
     channel = connection.channel()
 
-    channel.queue_declare(queue='PRODUCTS_CHECKING', durable=True)
+    channel.queue_declare(queue='COMPENSATION_ORDER_CREATED')
 
     def callback(ch, method, properties, body):
         print(" [x] Received %r" % body)
+        print(json.loads(body))
 
-    channel.basic_consume(queue='PRODUCTS_CHECKING', on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(queue='COMPENSATION_ORDER_CREATED', on_message_callback=callback, auto_ack=True)
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()

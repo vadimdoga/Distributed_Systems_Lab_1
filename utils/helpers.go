@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
 	"log"
 	"os"
 
@@ -26,17 +25,6 @@ func ReadConfigFile(filename string) {
 	os.Setenv("MONGODB_DB", mongodbDB.String())
 	os.Setenv("MONGODB_PORT", mongodbPort.String())
 
-}
-
-func DecodeReceiver(body []byte) EventReceive {
-	var decodedJSON EventReceive
-
-	err := json.Unmarshal([]byte(body), &decodedJSON)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	return decodedJSON
 }
 
 func FailOnError(err error, msg string) {

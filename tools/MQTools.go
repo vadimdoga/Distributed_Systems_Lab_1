@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/streadway/amqp"
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
+	"github.com/vadimdoga/PAD_Products_Service/utils"
 )
 
 var MQChannel *amqp.Channel
@@ -45,7 +45,7 @@ func QueuePublish(queueName string, body []byte) {
 			ContentType: "text/plain",
 			Body:        body,
 		})
-	FailOnJsonError(err, "Failed to publish a message", body)
+	utils.FailOnError(err, "Failed to publish a message")
 }
 
 func QueueReceive(queueName string, recvChannel chan []byte) {
@@ -61,7 +61,9 @@ func QueueReceive(queueName string, recvChannel chan []byte) {
 			nil,                // args
 		)
 		utils.FailOnError(err, "Failed to register a consumer")
+
 		for d := range msgs {
+			d.Ack(false)
 			recvChannel <- d.Body
 		}
 	}

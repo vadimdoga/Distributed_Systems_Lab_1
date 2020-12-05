@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"encoding/json"
 	"log"
 	"os"
 	"strconv"
@@ -25,9 +26,7 @@ func TimeoutTasks() {
 		time.Sleep(timeout * time.Second)
 
 		response, err := db.ProductCollection.Find(Ctx, bson.M{"status": "building"})
-		if err != nil {
-			log.Fatal(err)
-		}
+		utils.FailOnError(err, "No Products with status: building")
 
 		response.All(Ctx, &products)
 
@@ -36,9 +35,9 @@ func TimeoutTasks() {
 			diff := currentTime.Sub(pr.CreatedAt)
 			if diff.Seconds() >= 1 {
 				_, err := db.ProductCollection.DeleteOne(Ctx, bson.M{"_id": pr.ID})
-				if err != nil {
-					log.Fatal(err)
-				} else {
+
+				utils.FailOnError(err, "Delete unsuccesfull")
+				if err == nil {
 					log.Printf("Task %s timeout reached!. Succesfull delete!", pr.ID.String())
 				}
 			}
@@ -55,9 +54,7 @@ func priorityCountDocuments() (int64, int64) {
 			{"status": "delivering"},
 		},
 	})
-	if highErr != nil {
-		log.Fatal(highErr)
-	}
+	utils.FailOnError(highErr, "High priority error")
 
 	lowPriority, lowErr := db.ProductCollection.CountDocuments(Ctx, bson.M{
 		"$and": []bson.M{
@@ -67,9 +64,7 @@ func priorityCountDocuments() (int64, int64) {
 			{"status": "delivering"},
 		},
 	})
-	if lowErr != nil {
-		log.Fatal(lowErr)
-	}
+	utils.FailOnError(lowErr, "Low priority error")
 
 	return highPriority, lowPriority
 }
@@ -106,9 +101,12 @@ func ProcessOrderEvent(jsonBody utils.EventReceive) (float64, []utils.ProductsPu
 		var productDB db.Products
 		var newProductItem utils.ProductsPublishList
 
-		if err := db.ProductCollection.FindOne(Ctx, bson.M{"title": productJson.ProductTitle}).Decode(&productDB); err != nil {
-			log.Fatal(err)
-		}
+		err := db.ProductCollection.FindOne(Ctx, bson.M{"title": productJson.ProductTitle}).Decode(&productDB)
+
+		body, castErr := json.Marshal(jsonBody)
+		utils.FailOnError(castErr, "cast err")
+
+		FailOnJsonError(err, "No product with such title", body)
 
 		newProductItem.Amount = productJson.Amount
 		newProductItem.ProductTitle = productJson.ProductTitle
