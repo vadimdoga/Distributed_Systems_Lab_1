@@ -54,11 +54,23 @@ func ReceiveCompensateProducts() {
 	cmpProductsRecvChannel := make(chan []byte)
 
 	go QueueReceive("COMPENSATION_PRODUCTS_CHECKING", cmpProductsRecvChannel)
+
+	for {
+		bytesBody := <-cmpProductsRecvChannel
+
+		var jsonBody utils.EventPublish
+
+		err := json.Unmarshal([]byte(bytesBody), &jsonBody)
+		utils.FailOnError(err, "Casting error")
+
+		CompensateProducts(jsonBody)
+
+	}
 }
 
 func FailOnJsonError(err error, msg string, recvBody []byte) {
 	if err != nil {
 		PublishCompensateOrder(recvBody, msg)
-		log.Fatalf("%s: %s", msg, err)
+		log.Println(fmt.Sprintf("%s : %s", msg, err.Error()))
 	}
 }

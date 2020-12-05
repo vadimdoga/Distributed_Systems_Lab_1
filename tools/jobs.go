@@ -2,6 +2,7 @@ package tools
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -10,6 +11,7 @@ import (
 	"github.com/vadimdoga/PAD_Products_Service/db"
 	"github.com/vadimdoga/PAD_Products_Service/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // TimeoutTasks ...
@@ -118,4 +120,32 @@ func ProcessOrderEvent(jsonBody utils.EventReceive) (float64, []utils.ProductsPu
 	}
 
 	return totalPrice, newJsonProducts
+}
+
+func CompensateProducts(jsonBody utils.EventPublish) {
+	for _, productJson := range jsonBody.Products {
+		var productDB db.Products
+
+		objID, err := primitive.ObjectIDFromHex(productJson.ProductID)
+		utils.FailOnError(err, "Cast to objID")
+
+		err = db.ProductCollection.FindOne(Ctx, bson.M{"_id": objID}).Decode(&productDB)
+		utils.FailOnError(err, "Product Not Found")
+
+		newQuantity := productDB.Quantity + int(productJson.Amount)
+
+		_, err = db.ProductCollection.UpdateOne(
+			Ctx,
+			productDB,
+			bson.M{
+				"$set": bson.M{
+					"quantity": newQuantity,
+				},
+			},
+		)
+
+		if err != nil {
+			log.Println(fmt.Sprintf("Successful compensate on transaction: %s", jsonBody.TransactionID))
+		}
+	}
 }

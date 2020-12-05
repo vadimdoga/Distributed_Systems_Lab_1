@@ -13,10 +13,11 @@ func RabbitMQConnect() {
 	port := os.Getenv("MQ_PORT")
 	address := os.Getenv("MQ_ADDRESS")
 	conn, err := amqp.Dial("amqp://guest:guest@" + address + ":" + port)
-	utils.FailOnError(err, "Failed to connect to RabbitMQ")
+	utils.SuccessOrError(err, "Successful Connection to RMQ", "Failed to connect to RabbitMQ")
 
 	MQChannel, err = conn.Channel()
 	utils.FailOnError(err, "Failed to open a channel")
+
 }
 
 func declareQueue(eventName string) amqp.Queue {
@@ -63,7 +64,6 @@ func QueueReceive(queueName string, recvChannel chan []byte) {
 		utils.FailOnError(err, "Failed to register a consumer")
 
 		for d := range msgs {
-			d.Ack(false)
 			recvChannel <- d.Body
 		}
 	}

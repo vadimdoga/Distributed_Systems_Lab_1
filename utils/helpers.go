@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -29,6 +30,14 @@ func ReadConfigFile(filename string) {
 
 func FailOnError(err error, msg string) {
 	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
+		log.Println(fmt.Sprintf("%s : %s", msg, err.Error()))
+	}
+}
+
+func SuccessOrError(err error, successMsg string, errorMsg string) {
+	if err != nil {
+		log.Fatal(fmt.Sprintf("%s : %s", errorMsg, err.Error()))
+	} else {
+		log.Println(successMsg)
 	}
 }
