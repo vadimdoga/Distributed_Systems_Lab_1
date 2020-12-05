@@ -6,8 +6,8 @@ import (
 	"runtime"
 
 	"github.com/gorilla/mux"
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/routes"
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/tools"
+	"github.com/vadimdoga/PAD_Products_Service/routes"
+	"github.com/vadimdoga/PAD_Products_Service/tools"
 )
 
 func main() {

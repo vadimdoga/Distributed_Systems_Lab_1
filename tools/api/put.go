@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/db"
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/tools"
+	"github.com/vadimdoga/PAD_Products_Service/db"
+	"github.com/vadimdoga/PAD_Products_Service/tools"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"

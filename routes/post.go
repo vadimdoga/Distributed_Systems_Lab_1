@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/db"
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/tools"
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
+	"github.com/vadimdoga/PAD_Products_Service/db"
+	"github.com/vadimdoga/PAD_Products_Service/tools"
+	"github.com/vadimdoga/PAD_Products_Service/utils"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
