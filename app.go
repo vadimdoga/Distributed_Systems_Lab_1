@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"runtime"
 
 	"github.com/gorilla/mux"
 	"github.com/vadimdoga/Distributed_Systems_Lab_1/routes"
@@ -16,14 +17,17 @@ func main() {
 	// start timeout check
 	go tools.TimeoutTasks()
 
-	// handle routes
-	go handleRequests(tools.SERVICE_ADDRESS)
-
 	// connect to rabbitmq
-	_, ch := tools.RabbitMQConnect()
+	tools.RabbitMQConnect()
 
-	//wait for data from queue
-	tools.WaitForMQ(ch)
+	runtime.GOMAXPROCS(2)
+
+	//start events
+	go tools.ReceiveOrder()
+	go tools.ReceiveCompensateProducts()
+
+	// handle routes
+	handleRequests(tools.SERVICE_ADDRESS)
 }
 
 func handleRequests(serviceAddress string) {

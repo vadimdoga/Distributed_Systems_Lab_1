@@ -67,8 +67,6 @@ func establishConnection() *mongo.Database {
 	mongodbHost := os.Getenv("MONGODB_HOST")
 	mongodbPort := os.Getenv("MONGODB_PORT")
 	mongodbDB := os.Getenv("MONGODB_DB")
-	// mongodbUsername := os.Getenv("MONGODB_USERNAME")
-	// mongodbPassword := os.Getenv("MONGODB_PASSWORD")
 
 	// Database Config
 	uri := fmt.Sprintf("mongodb://%s:%s", mongodbHost, mongodbPort)
@@ -114,5 +112,5 @@ func APIConfig() {
 	db.ProductsCollection(ConnDB)
 
 	// connect to gateway
-	gatewayConnection(SERVICE_ADDRESS)
+	// gatewayConnection(SERVICE_ADDRESS)
 }
