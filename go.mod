@@ -1,4 +1,4 @@
-module github.com/vadimdoga/Distributed_Systems_Lab_1
+module github.com/vadimdoga/PAD_Products_Service
 
 go 1.15
 

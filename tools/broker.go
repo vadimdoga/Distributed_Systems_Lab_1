@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/streadway/amqp"
-	"github.com/vadimdoga/Distributed_Systems_Lab_1/utils"
+	"github.com/vadimdoga/PAD_Products_Service/utils"
 )
 
 func failOnError(err error, msg string) {
