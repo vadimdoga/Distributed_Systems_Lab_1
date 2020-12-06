@@ -40,6 +40,20 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
+func GetAllProducts(w http.ResponseWriter, r *http.Request) {
+	var results []db.Products
+	cursor, err := db.ProductCollection.Find(tools.Ctx, bson.M{})
+
+	err = cursor.All(tools.Ctx, &results)
+
+	utils.FailOnError(err, "error find all")
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	res, _ := json.Marshal(results)
+	w.Write(res)
+}
+
 // GetCountStatus ...
 func GetCountStatus(w http.ResponseWriter, r *http.Request) {
 	response, err := db.ProductCollection.CountDocuments(tools.Ctx, bson.M{"$or": []bson.M{{"status": "building"}, {"status": "delivering"}}})
