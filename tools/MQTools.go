@@ -23,7 +23,7 @@ func declareQueue(eventName string) (amqp.Queue, *amqp.Channel) {
 
 	q, err := mqChannel.QueueDeclare(
 		eventName, // name
-		false,     // durable
+		true,      // durable
 		false,     // delete when unused
 		false,     // exclusive
 		false,     // no-wait
