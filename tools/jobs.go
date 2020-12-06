@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -105,10 +104,33 @@ func ProcessOrderEvent(jsonBody utils.EventReceive) (float64, []utils.ProductsPu
 
 		err := db.ProductCollection.FindOne(Ctx, bson.M{"title": productJson.ProductTitle}).Decode(&productDB)
 
-		body, castErr := json.Marshal(jsonBody)
-		utils.FailOnError(castErr, "cast err")
+		FailOnJsonError(err, "No product with such title", jsonBody)
+		if err != nil {
+			return 0, nil
+		}
 
-		FailOnJsonError(err, "No product with such title", body)
+		if productDB.Quantity < int(productJson.Amount) {
+			errMsg := fmt.Errorf("Not enough products in stock! In stock are %d product(s)", int(productDB.Quantity))
+			FailOnJsonError(errMsg, "Not enough quantity", jsonBody)
+			return 0, nil
+		}
+
+		newQuantity := productDB.Quantity - int(productJson.Amount)
+
+		_, err = db.ProductCollection.UpdateOne(
+			Ctx,
+			productDB,
+			bson.M{
+				"$set": bson.M{
+					"quantity": newQuantity,
+				},
+			},
+		)
+
+		FailOnJsonError(err, "Update error", jsonBody)
+		if err != nil {
+			return 0, nil
+		}
 
 		newProductItem.Amount = productJson.Amount
 		newProductItem.ProductTitle = productJson.ProductTitle

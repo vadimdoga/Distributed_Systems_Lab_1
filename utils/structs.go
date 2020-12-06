@@ -36,6 +36,8 @@ type EventPublish struct {
 }
 
 type EventCompensate struct {
-	ProductDetails string `json:"product_details"`
-	ErrorMsg       string `json:"error_msg"`
+	TransactionID string         `json:"transaction_id"`
+	UserID        int64          `json:"user_id"`
+	Products      []productsList `json:"products"`
+	ErrorMsg      string         `json:"error_msg"`
 }

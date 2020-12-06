@@ -7,21 +7,21 @@ import (
 	"github.com/vadimdoga/PAD_Products_Service/utils"
 )
 
-var MQChannel *amqp.Channel
+var MQConn *amqp.Connection
 
 func RabbitMQConnect() {
 	port := os.Getenv("MQ_PORT")
 	address := os.Getenv("MQ_ADDRESS")
-	conn, err := amqp.Dial("amqp://guest:guest@" + address + ":" + port)
+	var err error
+	MQConn, err = amqp.Dial("amqp://guest:guest@" + address + ":" + port)
 	utils.SuccessOrError(err, "Successful Connection to RMQ", "Failed to connect to RabbitMQ")
-
-	MQChannel, err = conn.Channel()
-	utils.FailOnError(err, "Failed to open a channel")
-
 }
 
-func declareQueue(eventName string) amqp.Queue {
-	q, err := MQChannel.QueueDeclare(
+func declareQueue(eventName string) (amqp.Queue, *amqp.Channel) {
+	mqChannel, err := MQConn.Channel()
+	utils.FailOnError(err, "Failed to open a channel")
+
+	q, err := mqChannel.QueueDeclare(
 		eventName, // name
 		false,     // durable
 		false,     // delete when unused
@@ -31,13 +31,13 @@ func declareQueue(eventName string) amqp.Queue {
 	)
 	utils.FailOnError(err, "Failed to declare a queue")
 
-	return q
+	return q, mqChannel
 }
 
 func QueuePublish(queueName string, body []byte) {
-	declaredQueue := declareQueue(queueName)
+	declaredQueue, mqChannel := declareQueue(queueName)
 
-	err := MQChannel.Publish(
+	err := mqChannel.Publish(
 		"",                 // exchange
 		declaredQueue.Name, // routing key
 		false,              // mandatory
@@ -50,9 +50,9 @@ func QueuePublish(queueName string, body []byte) {
 }
 
 func QueueReceive(queueName string, recvChannel chan []byte) {
-	declaredQueue := declareQueue(queueName)
+	declaredQueue, mqChannel := declareQueue(queueName)
 	for {
-		msgs, err := MQChannel.Consume(
+		msgs, err := mqChannel.Consume(
 			declaredQueue.Name, // queue
 			"",                 // consumer
 			true,               // auto-ack
